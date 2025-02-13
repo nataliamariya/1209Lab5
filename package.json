@@ -1,5 +1,5 @@
 {
-  "name": "reactjs-tabbedpane-component",
+  "name": "1209Lab5",
   "version": "1.0.19",
   "description": "A tabbed pane component using React.js",
   "author": "nataliamariya",
@@ -22,7 +22,8 @@
     "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
     "predeploy": "cd example && yarn install && yarn run build",
-    "deploy": "gh-pages -d example/build"
+    "deploy": "gh-pages -d example/build -r https://github.com/nataliamariya/1209Lab5.git"
+
   },
   "peerDependencies": {
     "react": ">16.0.0"
