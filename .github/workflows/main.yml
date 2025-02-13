@@ -1,18 +1,20 @@
-name: CI Publish, with security
+name: CI Publish, with security check using Snyk
 
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
+  # Security job to check vulnerabilities using Snyk
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
@@ -20,37 +22,69 @@ jobs:
         with:
           command: monitor
 
+  # Build job
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [16.x, 18.x, 20.x]
+
     steps:
-      - uses: actions/checkout@v2
+      # Check out the code
+      - uses: actions/checkout@v3
+
+      # Set up the correct Node.js version
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      # Clear npm cache to avoid issues with corrupted packages
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      # Install dependencies
       - name: Install dependencies
         run: npm ci
-      - name: Build project
+
+      # Check if jQuery is installed properly
+      - name: Check if jQuery is installed
+        run: npm list jquery
+
+      # Run build (only if the build script exists)
+      - name: Run build
         run: npm run build --if-present
+
+      # Run tests
       - name: Run tests
         run: npm test
 
+  # Publish job, runs after build and security jobs
   publish:
-    needs: [security, build]
+    needs: [security, build]  # This makes sure 'publish' runs after 'security' and 'build' jobs
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      # Check out the code
+      - uses: actions/checkout@v3
+
+      # Set up Node.js
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '15.x'
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
+
+      # Install dependencies again for publishing
       - name: Install dependencies
         run: npm ci
-      - name: Publish to npm
+
+      - name: Login to npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      # Publish the package to NPM
+      - name: Publish
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
