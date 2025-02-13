@@ -23,7 +23,6 @@
     "test:watch": "react-scripts test --env=jsdom",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build -r https://github.com/nataliamariya/1209Lab5.git"
-
   },
   "peerDependencies": {
     "react": ">16.0.0"
