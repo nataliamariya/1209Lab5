@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+._19OqE {
+  display: flex;
+}
+
+._31s4L a, ._24V_p a {
+  color: #FCC;
+  text-decoration: none;
+}
+
+._31s4L {
+  background-color: #b366ff;
+  border-radius: 5px;
+  color: #FFF;
+  margin: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+._24V_p {
+  background-color: #d966ff;
+  border-radius: 5px;
+  color: #FFF;
+  padding: 10px;
+  margin: 10px 10px 10px 0;
+  width: 100%;
+}
